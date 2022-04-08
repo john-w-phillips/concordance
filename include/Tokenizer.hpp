@@ -15,6 +15,9 @@ namespace code_challenge
     const std::list<std::string>&
     scan(std::istream& stream)
     {
+      tokens.clear();
+      current_token.clear();
+      is_current_token_special = false;
       tokenize_inner(stream);
       return tokens;
     }
@@ -40,17 +43,11 @@ namespace code_challenge
 	else if (std::isblank(next)
 		 || (next == std::char_traits<char>::eof()))
 	{
-	  // if (current_token.size())
-	  //   tokens.push_back(current_token);
-	  // current_token.clear();
 	  maybe_push_back_token(stream);
 	}
 	else if (next == '.')
 	{
 	  handle_sentence_end(stream);
-	  // tokens.push_back(current_token);
-	  // current_token.clear();
-	  // tokens.push_back(SENTENCE_END);
 	}
 	else
 	{
@@ -59,8 +56,7 @@ namespace code_challenge
 	    end the current token. This allows something like "this:"
 	    to be tokenized as just 'this'.
 	   */
-	  tokens.push_back(current_token);
-	  current_token.clear();
+	  maybe_push_back_token(stream);
 	}
 	if (next == std::char_traits<char>::eof())
 	  break;
@@ -69,7 +65,7 @@ namespace code_challenge
     }
     void handle_sentence_end(std::istream& stream)
     {
-      if (!current_token.size())
+      if (current_token.size() == 0)
       {
 	tokens.push_back(SENTENCE_END);
 	return;
@@ -122,6 +118,7 @@ namespace code_challenge
 	  return;	  
 	}
       }
+      is_current_token_special = false;
       if (current_token.size())
 	tokens.push_back(current_token);
       current_token.clear();

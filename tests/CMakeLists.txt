@@ -1,3 +1,7 @@
 add_executable(TestTokenizer TestTokenizer.cpp)
 target_link_libraries(TestTokenizer gtest_main gtest pthread code_challenge)
 add_test(TestTokenizer TestTokenizer)
+
+add_executable(TestWordCompiler TestWordCompiler.cpp)
+target_link_libraries(TestWordCompiler gtest_main gtest pthread code_challenge)
+add_test(TestWordCompiler TestWordCompiler)

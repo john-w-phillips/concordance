@@ -20,7 +20,7 @@ namespace
 
   TEST(TestTokenizer, TestSpecialWords)
   {
-    std::stringstream stream{"special words: e.g. i.e. Q.E.D."};
+    std::stringstream stream{"special words:\n e.g. i.e. Q.E.D."};
     Tokenizer tokenizer;
     auto tokens = tokenizer.scan(stream);
     ASSERT_EQ(tokens.size(), 5);
