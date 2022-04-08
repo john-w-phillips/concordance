@@ -3,6 +3,7 @@ This repo houses code for a program that produces a 'concordance'
 (list of word frequences with sentence numbers) of its plain text
 input from either standard input or a file.
 
+## Use
 Example usage:
 
 ```sh
@@ -47,6 +48,54 @@ To parse from standard input, don't supply any arguments.
 
 There is also a `--help` argument.
 
+## Special words
+
+Some words are 'special' to the tokenizer (the thing that breaks text
+into constituent words). These are words with periods in them, since
+these normally signal the end of sentence but do not for special
+cases, e.g.: e.g., i.e., and so on. In order to deal with this, there
+is a small built-in database of special words. However, in order to
+add all the special words you might want, there is an option to add a
+special word file containing a list of such words (one word per line),
+the `-s` or `--special-words` option. There is an example special
+words file and text included in the repo, which you can use as follows
+(assuming you are in your build directory, see the section below about
+building and running):
+
+```sh
+$ ./src/concordance --special-words ../example-special-words.txt --filename ../example-with-special-words.txt
+a {1:2}
+am {1:1}
+and {1:1}
+announce {1:1}
+bjarne {1:1}
+d.d.s. {1:1}
+enough {1:2}
+esq. {1:1}
+file {1:1}
+for {1:2}
+however {1:2}
+i {1:1}
+is {3:1,1,2}
+it {1:2}
+long {2:1,2}
+m.d. {1:1}
+my {1:1}
+name {1:1}
+not {1:1}
+p.h.d. {1:1}
+pleased {1:1}
+quite {1:1}
+simple {1:2}
+stroustrup {1:1}
+test {1:2}
+text {1:1}
+that {1:1}
+this {1:1}
+to {1:1}
+very {1:1}
+```
+
 ## Building and running `concordance`
 
 This repo follows a fairly typical `cmake` layout. To build, you can do:
@@ -64,7 +113,7 @@ At that point, you can run the `concordance` program in `src`:
 src/concordance --file ../example.txt
 ```
 
-## Building testing `concordance`
+## Building and testing `concordance`
 You can build with unit tests in the following way:
 
 ```sh
