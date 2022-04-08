@@ -7,7 +7,9 @@ add_library(code_challenge STATIC)
 target_compile_features(code_challenge PRIVATE cxx_std_17)
 include_directories(include)
 add_subdirectory(src)
-add_subdirectory(tests)
+if (BUILD_UNIT_TESTS)
+  add_subdirectory(tests)
+endif()
 
 
 
