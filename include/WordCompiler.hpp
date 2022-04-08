@@ -113,6 +113,23 @@ namespace code_challenge
       return output;
     }
 
+    void set_specialwords(std::istream& words_stream)
+    {
+      std::list<std::string> words;      
+      for (; ;)
+      {
+	std::string line;
+	std::getline(words_stream, line);
+	if (line.size())
+	{
+	  words.push_back(line);
+	}
+	else
+	  break;
+      }
+      tokenizer.set_special_words(words);
+    }
+
     void compile_words_from_source(std::istream& char_stream)
     {
       auto token_stream = tokenizer.scan(char_stream);

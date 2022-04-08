@@ -75,3 +75,5 @@ $ make -j
 $ ctest -VV .
 ```
 
+You need to have `gtest` installed to build with tests.
+

@@ -3,7 +3,7 @@
 namespace code_challenge
 {
   const std::string Tokenizer::SENTENCE_END = ".";
-  const std::list<std::string> Tokenizer::SPECIAL_CHARS{
+  const std::list<std::string> Tokenizer::SPECIAL_WORDS{
     "i.e.",
     "e.g.",
     "Q.E.D."

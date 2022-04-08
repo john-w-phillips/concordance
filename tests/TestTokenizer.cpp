@@ -26,4 +26,20 @@ namespace
     ASSERT_EQ(tokens.size(), 5);
     ASSERT_EQ(tokens, (std::list<std::string>{"special", "words", "e.g.", "i.e.", "Q.E.D."}));
   }
+
+  TEST(TestTokenizer, TestSpecialWordsFlexible)
+  {
+    std::stringstream stream{"special words:\n e.g. M.S., B.S., D.D.S., P.H.D."};
+    Tokenizer tokenizer;
+    std::list<std::string> new_special{
+      "P.H.D.",
+      "M.S.",
+      "B.S.",
+      "D.D.S.",
+    };
+    tokenizer.set_special_words(new_special);
+    auto tokens = tokenizer.scan(stream);
+    ASSERT_EQ(tokens.size(), 10);
+    ASSERT_EQ(tokens, (std::list<std::string>{"special", "words", "e", ".", "g", ".", "M.S.", "B.S.", "D.D.S.", "P.H.D."}));
+  }  
 }

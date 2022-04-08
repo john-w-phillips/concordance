@@ -7,7 +7,7 @@ target_compile_features(code_challenge PRIVATE cxx_std_17)
 include_directories(include)
 add_subdirectory(src)
 if (BUILD_UNIT_TESTS)
-  find_package(GTest REQUIRED)  
+  find_package(GTest REQUIRED)
   add_subdirectory(tests)
 endif()
 

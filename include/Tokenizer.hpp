@@ -11,6 +11,10 @@ namespace code_challenge
   {
   public:
     const static std::string SENTENCE_END;
+    Tokenizer():
+      is_current_token_special{false},
+      special_words{SPECIAL_WORDS}
+    {}
 
     const std::list<std::string>&
     scan(std::istream& stream)
@@ -22,10 +26,21 @@ namespace code_challenge
       return tokens;
     }
 
+    
+    void set_special_words(const std::list<std::string>& new_words)
+    {
+      special_words = new_words;
+    }
 
+    const std::list<std::string>&
+    get_special_words()
+    {
+      return special_words;
+    }
 
   protected:
-    const static std::list<std::string> SPECIAL_CHARS;
+    std::list<std::string> special_words;
+    const static std::list<std::string> SPECIAL_WORDS;
 
     void
     tokenize_inner(std::istream& stream)
@@ -36,7 +51,13 @@ namespace code_challenge
       for (; ;)
       {
 	next = stream.get();
-	if (std::isalnum(next))
+	/*
+	  We include apostophe in a word so words like "that's" are
+	  words. This behavior is somewhat 'up for debate', in that
+	  you could argue that we should treat "that's" as "that" and
+	  throw away the s.
+	 */
+	if (std::isalnum(next) || next == '\'')
 	{
 	  current_token.push_back(next);
 	}
@@ -63,6 +84,13 @@ namespace code_challenge
       }
 
     }
+
+    /*
+      Handling a period (sentence end) is complicated by the fact that
+      some 'words' like i.e., e.g., M.S., and so on, contain periods
+      that do not end a sentence. So we have to check for this
+      contingency against a database of 'special words'.
+     */
     void handle_sentence_end(std::istream& stream)
     {
       if (current_token.size() == 0)
@@ -71,7 +99,7 @@ namespace code_challenge
 	return;
       }
 	  
-      for (auto& i: SPECIAL_CHARS)
+      for (auto& i: get_special_words())
       {
 	std::string temp_token = current_token;
 	temp_token.push_back('.');
@@ -99,12 +127,22 @@ namespace code_challenge
     {
       if (is_current_token_special)
       {
-	auto it = std::find(SPECIAL_CHARS.begin(),
-			    SPECIAL_CHARS.end(),
+	auto it = std::find(get_special_words().begin(),
+			    get_special_words().end(),
 			    current_token);
+	/*
+	  no match, it was 'special' but now isn't. This could happen
+	  if someone for whatever reason writes:
+
+	  ...' e.generally we do not'...
+
+	  We would mistake this for 'e.g.' at the beginning but then
+	  have to go back. It's hard to see how these situations could
+	  occur in well-formed text but I added code to handle it.
+	*/
 	if (it == tokens.end())
 	{
-	  // no match.
+
 	  while (current_token.back() != '.')
 	  {
 	    stream.putback(current_token.back());

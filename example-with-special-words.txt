@@ -1,0 +1,4 @@
+My name is Bjarne Stroustrup, M.D., D.D.S., P.H.D., Esq., and I am
+quite pleased to announce that this text file is not very long.
+
+However, it is long enough for a simple test.
