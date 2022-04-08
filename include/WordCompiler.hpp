@@ -12,12 +12,13 @@ namespace code_challenge
   class WordInformation
   {
   public:
+    using SentenceList = std::list<unsigned>;
     WordInformation(const std::string& word):
       num_occurs{0},      
       word{word}
     {}
 
-    const std::list<unsigned>&
+    const SentenceList&
     get_sentence_numbers() const
     {
       return sentence_nums;
@@ -27,8 +28,7 @@ namespace code_challenge
     add_occur_in_sentence(unsigned sentence)
     {
       incr_num_occurs();
-      if (sentence_nums.back() != sentence)
-	sentence_nums.push_back(sentence);
+      sentence_nums.push_back(sentence);
     }
     
 
@@ -69,7 +69,7 @@ namespace code_challenge
       return report.str();
     }
   protected:
-    std::list<unsigned> sentence_nums;
+    SentenceList sentence_nums;
     unsigned num_occurs;
     std::string word;
   };
@@ -79,9 +79,29 @@ namespace code_challenge
   class WordCompiler
   {
   public:
-    using WordIterator = std::map<std::string,WordInformation>::iterator;
     WordCompiler(): words{}
     {}
+
+    class WordIterator: public std::map<std::string,WordInformation>::iterator
+    {
+    public:
+      using parent =  std::map<std::string,WordInformation>::iterator;
+
+      WordIterator(parent init):
+	parent(std::move(init))
+      {}
+
+      WordInformation&
+      operator*()
+      {
+	return parent::operator*().second;
+      }
+      WordInformation *
+      operator->()
+      {
+	return &parent::operator*().second;
+      }      
+    };
 
     std::string get_lowercase(const std::string& in)
     {
@@ -99,7 +119,6 @@ namespace code_challenge
       unsigned sentence = 1;
       for (const auto& i: token_stream)
       {
-	std::cout << "token: " << i << std::endl;
 	if (i == Tokenizer::SENTENCE_END)
 	  ++sentence;
 	else
@@ -122,13 +141,13 @@ namespace code_challenge
     WordIterator
     begin_words()
     {
-      return words.begin();
+      return WordIterator{words.begin()};
     }
 
     WordIterator
     end_words()
     {
-      return words.end();
+      return WordIterator{words.end()};
     }
 
 
