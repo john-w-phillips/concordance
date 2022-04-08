@@ -64,6 +64,7 @@ At that point, you can run the `concordance` program in `src`:
 src/concordance --file ../example.txt
 ```
 
+## Building testing `concordance`
 You can build with unit tests in the following way:
 
 ```sh
@@ -73,5 +74,4 @@ $ cmake -DBUILD_UNIT_TESTS=Yes ..
 $ make -j
 $ ctest -VV .
 ```
-
 
