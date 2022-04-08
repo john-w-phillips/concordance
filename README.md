@@ -4,10 +4,13 @@ This repo houses code for a program that produces a 'concordance'
 input from either standard input or a file.
 
 ## Use
-Example usage:
+These example usages assume you are in a build directory and have the
+relative paths set accordingly.  See the below section about building
+and running concordance for more. Here is an example usage of the
+`concordance` program from a build directory:
 
 ```sh
-$ concordance --filename example.txt
+$ ./src/concordance --filename ../example.txt
 a {2:1,1}
 all {1:1}
 alphabetical {1:1}
@@ -44,9 +47,16 @@ write {1:1}
 written {1:1}
 ```
 
-To parse from standard input, don't supply any arguments. 
+To parse from standard input, don't supply any arguments:
 
-There is also a `--help` argument.
+```sh
+$echo "hello world!" | ./src/concordance
+hello {1:1}
+world {1:1}
+```
+
+
+There is also a `--help` argument, which will produce a usage message.
 
 ## Special words
 
