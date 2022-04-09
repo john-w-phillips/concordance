@@ -41,7 +41,7 @@ namespace code_challenge
   protected:
     std::list<std::string> special_words;
     const static std::list<std::string> SPECIAL_WORDS;
-
+    const static std::string SENTENCE_ENDINGS;
     void
     tokenize_inner(std::istream& stream)
     {
@@ -64,11 +64,11 @@ namespace code_challenge
 	else if (std::isblank(next)
 		 || (next == std::char_traits<char>::eof()))
 	{
-	  maybe_push_back_token(stream);
+	  process_blank(stream);
 	}
-	else if (next == '.')
+	else if (SENTENCE_ENDINGS.find(next) != std::string::npos)
 	{
-	  handle_sentence_end(stream);
+	  handle_sentence_end(stream, next);
 	}
 	else
 	{
@@ -77,9 +77,9 @@ namespace code_challenge
 	    end the current token. This allows something like "this:"
 	    to be tokenized as just 'this'.
 	   */
-	  maybe_push_back_token(stream);
+	  process_blank(stream);
 	}
-	if (next == std::char_traits<char>::eof())
+	if (next == std::char_traits<char>::eof() && stream.eof())
 	  break;
       }
 
@@ -91,7 +91,7 @@ namespace code_challenge
       that do not end a sentence. So we have to check for this
       contingency against a database of 'special words'.
      */
-    void handle_sentence_end(std::istream& stream)
+    void handle_sentence_end(std::istream& stream, int endchar)
     {
       if (current_token.size() == 0)
       {
@@ -102,14 +102,15 @@ namespace code_challenge
       for (auto& i: get_special_words())
       {
 	std::string temp_token = current_token;
-	temp_token.push_back('.');
-	// we have a 'special' word. For example, we the current token
-	// might be i, we got '.', and we see that there is a word
-	// starting with 'i.' (i.e.), so we set the special flag and continue.
+	temp_token.push_back(endchar);
+
 	if(i.substr(0,
 		    temp_token.size()) == temp_token)
 	{
-	  current_token.push_back('.');
+	  // we have a 'special' word. For example, we the current token
+	  // might be i, we got '.', and we see that there is a word
+	  // starting with 'i.' (i.e.), so we set the special flag and continue.	  
+	  current_token.push_back(endchar);
 	  is_current_token_special = true;
 	  break;
 	}
@@ -123,43 +124,75 @@ namespace code_challenge
       }
     }
 
-    void maybe_push_back_token(std::istream& stream)
+    void process_blank(std::istream& stream)
     {
       if (is_current_token_special)
       {
-	auto it = std::find(get_special_words().begin(),
-			    get_special_words().end(),
-			    current_token);
-	/*
-	  no match, it was 'special' but now isn't. This could happen
-	  if someone for whatever reason writes:
-
-	  ...' e.generally we do not'...
-
-	  We would mistake this for 'e.g.' at the beginning but then
-	  have to go back. It's hard to see how these situations could
-	  occur in well-formed text but I added code to handle it.
-	*/
-	if (it == tokens.end())
+	for (; ;)
 	{
+	  // auto it = std::find(get_special_words().begin(),
+	  // 		      get_special_words().end(),
+	  // 		      current_token);
+	  /*
+	    no match, it was 'special' but now isn't. This could happen
+	    if someone for whatever reason writes:
 
-	  while (current_token.back() != '.')
+	    ...' e.generally we do not'...
+
+	    We would mistake this for 'e.g.' at the beginning but then
+	    have to go back. It's hard to see how these situations could
+	    occur in well-formed text but I added code to handle it.
+	  */
+	  if (current_token_not_found_in_special_words())
 	  {
-	    stream.putback(current_token.back());
-	    current_token.pop_back();
+	    std::string temp_token_holder;
+	    /*
+	      If we happened to hit EOF at this last character but need
+	      to putback, we have to clear stream state first.
+	    */
+	    if (!stream)
+	      stream.clear();
+	    while (!current_token.empty()
+		   && SENTENCE_ENDINGS.find(current_token.back()) == std::string::npos)
+	    {
+	      temp_token_holder.insert(temp_token_holder.begin(), current_token.back());
+	      current_token.pop_back();
+	    }
+	    if (current_token.empty())
+	    {
+	      current_token = temp_token_holder;
+	      tokens.push_back(current_token);
+	      is_current_token_special = false;
+	      current_token.clear();
+	      return;	      
+	    }
+	    else
+	    {
+
+	      for (auto i = temp_token_holder.rbegin();
+		   i != temp_token_holder.rend(); ++i)
+		stream.putback(*i);
+	      stream.putback(current_token.back());
+	      current_token.pop_back();	      
+	    }
 	  }
-	  current_token.pop_back();
-	  tokens.push_back(current_token);
-	  tokens.push_back(SENTENCE_END);
-	  current_token.clear();
-	  is_current_token_special = false;
-	  return;	  
+	  else
+	    break;
 	}
       }
       is_current_token_special = false;
       if (current_token.size())
 	tokens.push_back(current_token);
       current_token.clear();
+    }
+
+
+    bool current_token_not_found_in_special_words()
+    {
+      return (std::find(get_special_words().begin(),
+			get_special_words().end(),
+			current_token)
+	      == get_special_words().end());
     }
 
     bool is_current_token_special;

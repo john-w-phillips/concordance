@@ -85,7 +85,17 @@ protected:
   std::string input_filename;
   std::string specialwords_filename;
 };
-  
+
+void output_prefix(unsigned lineno)
+{
+  constexpr static unsigned ALPHABET_SIZE = 26;  
+  char prefix = (lineno % ALPHABET_SIZE) + 'a';
+  unsigned nrepititions = lineno/ALPHABET_SIZE + 1;
+  for (unsigned j = 0; j < nrepititions; ++j)
+    std::cout << prefix;
+  std::cout << ". ";  
+}
+
 int
 main(int argc, char **argv)
 {
@@ -117,10 +127,13 @@ main(int argc, char **argv)
   }
 
   concordance.compile_words_from_source(*input_stream);
+  unsigned lineno = 0;
+
   for (auto i = concordance.begin_words();
        i != concordance.end_words();
-       ++i)
+       ++i,++lineno)
   {
+    output_prefix(lineno);
     std::cout << i->get_report_string() << std::endl;
   }
 }

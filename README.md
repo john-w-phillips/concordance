@@ -47,6 +47,12 @@ write {1:1}
 written {1:1}
 ```
 
+Each output line follows the following format:
+
+```
+<word> {<number-of-occurrences>:<sentence-occurrence1>,<sentence-occurrence2>...<sentence-occurrenceN>}
+```
+
 To parse from standard input, don't supply any arguments:
 
 ```sh
