@@ -80,36 +80,39 @@ building and running):
 
 ```sh
 $ ./src/concordance --special-words ../example-special-words.txt --filename ../example-with-special-words.txt
-a {1:2}
-am {1:1}
-and {1:1}
-announce {1:1}
-bjarne {1:1}
-d.d.s. {1:1}
-enough {1:2}
-esq. {1:1}
-file {1:1}
-for {1:2}
-however {1:2}
-i {1:1}
-is {3:1,1,2}
-it {1:2}
-long {2:1,2}
-m.d. {1:1}
-my {1:1}
-name {1:1}
-not {1:1}
-p.h.d. {1:1}
-pleased {1:1}
-quite {1:1}
-simple {1:2}
-stroustrup {1:1}
-test {1:2}
-text {1:1}
-that {1:1}
-this {1:1}
-to {1:1}
-very {1:1}
+a. a {2:2,2}
+b. am {1:1}
+c. and {1:1}
+d. announce {1:1}
+e. bjarne {1:1}
+f. d.d.s. {1:1}
+g. e.g. {1:2}
+h. enough {1:2}
+i. esq. {1:1}
+j. file {1:1}
+k. for {1:2}
+l. however {1:2}
+m. i {1:1}
+n. is {3:1,1,2}
+o. it {1:2}
+p. long {2:1,2}
+q. m.d. {1:1}
+r. mr. {1:1}
+s. my {1:1}
+t. name {1:1}
+u. not {1:1}
+v. p.h.d. {1:1}
+w. pleased {1:1}
+x. quite {1:1}
+y. simple {1:2}
+z. stroustrup {1:1}
+aa. test {2:2,2}
+bb. text {1:1}
+cc. that {1:1}
+dd. this {1:1}
+ee. to {1:1}
+ff. unit {1:2}
+gg. very {1:1}
 ```
 
 See the file `example-special-words.txt` for more information about
