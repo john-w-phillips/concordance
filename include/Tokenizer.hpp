@@ -78,12 +78,7 @@ namespace concordance
 	 */
 	if (std::isalnum(next) || next == '\'')
 	{
-	  if (last_token_may_have_ended_sentence
-	      && (next >= 'A' && next <= 'Z')
-	      && current_token.empty())
-	  {
-	    tokens.push_back(Tokenizer::SENTENCE_END);
-	  }
+	  insert_sentence_ender_if_new_sentence_detected(next);
 	  current_token.push_back(next);
 	}
 	else if (std::isblank(next)
@@ -97,7 +92,6 @@ namespace concordance
 	}
 	else
 	{
-
 	  /*
 	    In this case we ignore the character (for example :) but
 	    end the current token. This allows something like "this:"
@@ -193,6 +187,16 @@ namespace concordance
 	last_token_may_have_ended_sentence = true;
       else
 	last_token_may_have_ended_sentence = false;
+    }
+
+    void insert_sentence_ender_if_new_sentence_detected(int curchar)
+    {
+      if (last_token_may_have_ended_sentence
+	  && (curchar >= 'A' && curchar <= 'Z')
+	  && current_token.empty())
+      {
+	tokens.push_back(Tokenizer::SENTENCE_END);
+      }      
     }
 
     void putback_ending_of_token_upto_sentence_end(std::istream& stream)
