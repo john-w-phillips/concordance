@@ -126,33 +126,30 @@ namespace code_challenge
 
     void process_blank(std::istream& stream)
     {
-      if (is_current_token_special)
+      for (; is_current_token_special; )
       {
-	for (; ;)
+	/*
+	  no match, it was 'special' but now isn't. This could happen
+	  if someone for whatever reason writes:
+
+	  ...' e.generally we do not'...
+
+	  We would mistake this for 'e.g.' at the beginning but then
+	  have to go back. It's hard to see how these situations could
+	  occur in well-formed text but I added code to handle it.
+	*/
+	if (current_token_found_in_special_words())
 	{
-	  /*
-	    no match, it was 'special' but now isn't. This could happen
-	    if someone for whatever reason writes:
-
-	    ...' e.generally we do not'...
-
-	    We would mistake this for 'e.g.' at the beginning but then
-	    have to go back. It's hard to see how these situations could
-	    occur in well-formed text but I added code to handle it.
-	  */
-	  if (current_token_not_found_in_special_words())
-	  {
-	    if (putback_ending_of_token_upto_sentence_end(stream))
-	      return;
-	  }
-	  else
-	    break;
+	  // finalize_current_token_to_stream();
+	  // return;
+	  break;
+	}
+	else
+	{
+	  putback_ending_of_token_upto_sentence_end(stream);
 	}
       }
-      is_current_token_special = false;
-      if (current_token.size())
-	tokens.push_back(current_token);
-      current_token.clear();
+      finalize_current_token_to_stream();
     }
 
     bool putback_ending_of_token_upto_sentence_end(std::istream& stream)
@@ -172,9 +169,7 @@ namespace code_challenge
       if (current_token.empty())
       {
 	current_token = temp_token_holder;
-	tokens.push_back(current_token);
-	is_current_token_special = false;
-	current_token.clear();
+	finalize_current_token_to_stream();
 	return true;	      
       }
       else
@@ -200,12 +195,20 @@ namespace code_challenge
       return SENTENCE_ENDINGS.find(current_token.back()) == std::string::npos;
     }
 
-    bool current_token_not_found_in_special_words()
+    void finalize_current_token_to_stream()
+    {
+      is_current_token_special = false;
+      if (current_token.size())
+	tokens.push_back(current_token);
+      current_token.clear();      
+    }
+
+    bool current_token_found_in_special_words()
     {
       return (std::find(get_special_words().begin(),
 			get_special_words().end(),
 			current_token)
-	      == get_special_words().end());
+	      != get_special_words().end());
     }
 
     
