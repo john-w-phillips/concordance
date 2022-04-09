@@ -4,7 +4,7 @@
 namespace
 {
   using namespace concordance;
-  TEST(TestSentenceRecorder, TestWordInfo)
+  TEST(TestWordCompiler, TestWordInfo)
   {
     WordInformation information{"word"};
     ASSERT_EQ(information.get_num_occurs(), 0);
@@ -26,7 +26,7 @@ namespace
       "concordance, i.e. an alphabetical list of all word occurrences, labeled with word frequencies.\n\n"
       "Bonus: label each word with the sentence numbers in which each occurrence appeared.\n"};
   
-  TEST(TestSentenceRecorder, TestSimpleText)
+  TEST(TestWordCompiler, TestSimpleText)
   {
     WordCompiler compiler;
     std::stringstream stream{PROMPT_TEXT};
@@ -74,7 +74,7 @@ namespace
     "write {1:1}",
     "written {1:1}",
   };
-  TEST(TestSentenceRecorder, TestOutput)
+  TEST(TestWordCompiler, TestOutput)
   {
     WordCompiler compiler;
     std::stringstream stream{PROMPT_TEXT};
@@ -92,7 +92,7 @@ namespace
     "P.H.D.\n"
     "prefix:Sg."
   };
-  TEST(TestSentenceRecorder, TestCustomSpecials)
+  TEST(TestWordCompiler, TestCustomSpecials)
   {
     std::string text{
       "I am Sg. Gee, P.H.D. How are you?"
@@ -108,3 +108,4 @@ namespace
 	      WordInformation::SentenceList{2});
   }
 }
+ 
