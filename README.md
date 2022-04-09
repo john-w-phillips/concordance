@@ -146,3 +146,22 @@ $ ctest -VV .
 
 You need to have `gtest` installed to build with tests.
 
+## Some minor notes on special words
+
+In English, if I write 'My name is so-and-so Ph.D. How are you?', this
+counts as two sentences, even though 'Ph.D.' doesn't always end a
+sentence, see [this
+article](https://www.quickanddirtytips.com/education/grammar/ending-sentence-abbreviation)
+for more information. The text parser automatically detects if a
+'special' word from the database ends with a period and if the first
+letter after it is capitalized. If so, it will treat this as a new sentence.
+
+But wait! What about Mr. So-and-so? 'Mr.' does not end the
+sentence. For these cases a small list of non-sentence-ending special
+words is kept by the program, which can be extended with the special
+words file (see the `example-special-words.txt` file for more
+information, and the `--help` command of `concordance`, and the
+[relevant section in this document](#special-words)), so that
+'Mr. English', for example, doesn't count as two sentences.
+
+
