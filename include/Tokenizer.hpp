@@ -130,9 +130,6 @@ namespace code_challenge
       {
 	for (; ;)
 	{
-	  // auto it = std::find(get_special_words().begin(),
-	  // 		      get_special_words().end(),
-	  // 		      current_token);
 	  /*
 	    no match, it was 'special' but now isn't. This could happen
 	    if someone for whatever reason writes:
@@ -145,36 +142,8 @@ namespace code_challenge
 	  */
 	  if (current_token_not_found_in_special_words())
 	  {
-	    std::string temp_token_holder;
-	    /*
-	      If we happened to hit EOF at this last character but need
-	      to putback, we have to clear stream state first.
-	    */
-	    if (!stream)
-	      stream.clear();
-	    while (!current_token.empty()
-		   && SENTENCE_ENDINGS.find(current_token.back()) == std::string::npos)
-	    {
-	      temp_token_holder.insert(temp_token_holder.begin(), current_token.back());
-	      current_token.pop_back();
-	    }
-	    if (current_token.empty())
-	    {
-	      current_token = temp_token_holder;
-	      tokens.push_back(current_token);
-	      is_current_token_special = false;
-	      current_token.clear();
-	      return;	      
-	    }
-	    else
-	    {
-
-	      for (auto i = temp_token_holder.rbegin();
-		   i != temp_token_holder.rend(); ++i)
-		stream.putback(*i);
-	      stream.putback(current_token.back());
-	      current_token.pop_back();	      
-	    }
+	    if (putback_ending_of_token_upto_sentence_end(stream))
+	      return;
 	  }
 	  else
 	    break;
@@ -186,6 +155,50 @@ namespace code_challenge
       current_token.clear();
     }
 
+    bool putback_ending_of_token_upto_sentence_end(std::istream& stream)
+    {
+      std::string temp_token_holder;
+      /*
+	If we happened to hit EOF at this last character but need
+	to putback, we have to clear stream state first.
+      */
+      reset_stream_flags_if_necessary(stream);
+      while (!current_token.empty()
+	     && current_token_does_not_end_with_sentence_ender())
+      {
+	temp_token_holder.insert(temp_token_holder.begin(), current_token.back());
+	current_token.pop_back();
+      }
+      if (current_token.empty())
+      {
+	current_token = temp_token_holder;
+	tokens.push_back(current_token);
+	is_current_token_special = false;
+	current_token.clear();
+	return true;	      
+      }
+      else
+      {
+
+	for (auto i = temp_token_holder.rbegin();
+	     i != temp_token_holder.rend(); ++i)
+	  stream.putback(*i);
+	stream.putback(current_token.back());
+	current_token.pop_back();
+	return false;
+      }      
+    }
+
+    void reset_stream_flags_if_necessary(std::istream& stream)
+    {
+      if (!stream)
+	stream.clear();      
+    }
+
+    bool current_token_does_not_end_with_sentence_ender()
+    {
+      return SENTENCE_ENDINGS.find(current_token.back()) == std::string::npos;
+    }
 
     bool current_token_not_found_in_special_words()
     {
@@ -195,6 +208,7 @@ namespace code_challenge
 	      == get_special_words().end());
     }
 
+    
     bool is_current_token_special;
     std::string current_token;
     std::list<std::string> tokens;

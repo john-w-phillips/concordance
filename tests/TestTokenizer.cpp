@@ -35,7 +35,7 @@ namespace
     for (auto& i: tokens)
       std::cout << i << std::endl;
     ASSERT_EQ(tokens, (std::list<std::string>{"Q", Tokenizer::SENTENCE_END, "E", Tokenizer::SENTENCE_END, "Size"}));
-  }  
+  }
 
   TEST(TestTokenizer, TestAlternateSentenceEnds)
   {
