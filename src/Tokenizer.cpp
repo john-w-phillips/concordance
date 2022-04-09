@@ -1,6 +1,6 @@
 #include "Tokenizer.hpp"
 
-namespace code_challenge
+namespace concordance
 {
   const std::string Tokenizer::SENTENCE_END = ".";
   const std::string Tokenizer::SENTENCE_ENDINGS = ".!?";

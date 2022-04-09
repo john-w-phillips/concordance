@@ -7,7 +7,7 @@
 #include <list>
 #include <sstream>
 #include "Tokenizer.hpp"
-namespace code_challenge
+namespace concordance
 {
   class WordInformation
   {

@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <unordered_set>
 
-namespace code_challenge
+namespace concordance
 {
   class Tokenizer
   {

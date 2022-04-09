@@ -100,7 +100,7 @@ int
 main(int argc, char **argv)
 {
   Options options;
-  code_challenge::WordCompiler concordance;
+  concordance::WordCompiler concordance;
   options.parse(argc, argv);
   std::istream *input_stream = nullptr;
   std::unique_ptr<std::istream> stream_mem{};

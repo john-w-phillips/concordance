@@ -3,7 +3,7 @@
 
 namespace
 {
-  using namespace code_challenge;
+  using namespace concordance;
   TEST(TestSentenceRecorder, TestWordInfo)
   {
     WordInformation information{"word"};

@@ -4,7 +4,7 @@
 
 namespace
 {
-  using namespace code_challenge;
+  using namespace concordance;
   TEST(TestTokenizer, TestBasicText)
   {
     std::stringstream stream{"hello    world."};
