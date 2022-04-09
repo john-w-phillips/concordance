@@ -144,7 +144,9 @@ $ make -j
 $ ctest -VV .
 ```
 
-You need to have `gtest` installed to build with tests.
+This will link against `gtest`, you need to have
+[gtest](https://github.com/google/googletest) installed to build with
+tests.
 
 ## Some minor notes on special words
 
