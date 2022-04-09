@@ -88,4 +88,23 @@ namespace
       ++correct_text;
     }
   }
+  std::string CUSTOM_SPECIAL_FILE{
+    "P.H.D.\n"
+    "prefix:Sg."
+  };
+  TEST(TestSentenceRecorder, TestCustomSpecials)
+  {
+    std::string text{
+      "I am Sg. Gee, P.H.D. How are you?"
+    };
+    std::stringstream config_stream{CUSTOM_SPECIAL_FILE};
+    std::stringstream input_stream{text};
+    WordCompiler compiler;
+    compiler.set_specialwords(config_stream);
+    compiler.compile_words_from_source(input_stream);
+    ASSERT_EQ(compiler.get_info_for_word("gee").get_sentence_numbers(),
+	      WordInformation::SentenceList{1});
+    ASSERT_EQ(compiler.get_info_for_word("how").get_sentence_numbers(),
+	      WordInformation::SentenceList{2});
+  }
 }
