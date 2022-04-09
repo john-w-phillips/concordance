@@ -5,8 +5,8 @@ input from either standard input or a file.
 
 ## Use
 These example usages assume you are in a build directory and have the
-relative paths set accordingly.  See the below section about building
-and running concordance for more. Here is an example usage of the
+relative paths set accordingly.  See the below section about [building
+and running concordance](#building-and-running-concordance) for more. Here is an example usage of the
 `concordance` program from a build directory:
 
 ```sh
