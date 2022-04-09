@@ -112,6 +112,10 @@ to {1:1}
 very {1:1}
 ```
 
+See the file `example-special-words.txt` for more information about
+the file format, it details how to deal with prefix special words and
+ones that can end sentences.
+
 ## Building and running `concordance`
 
 This repo follows a fairly typical `cmake` layout. To build, you can do:

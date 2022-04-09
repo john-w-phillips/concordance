@@ -23,7 +23,6 @@ namespace
     std::stringstream stream{"special words:\n e.g. i.e. Q.E.D."};
     Tokenizer tokenizer;
     auto tokens = tokenizer.scan(stream);
-    ASSERT_EQ(tokens.size(), 5);
     ASSERT_EQ(tokens, (std::list<std::string>{"special", "words", "e.g.", "i.e.", "Q.E.D."}));
   }
 
@@ -32,11 +31,33 @@ namespace
     std::stringstream stream{"Q.E.Size"};
     Tokenizer tokenizer;
     auto tokens = tokenizer.scan(stream);
-    for (auto& i: tokens)
-      std::cout << i << std::endl;
     ASSERT_EQ(tokens, (std::list<std::string>{"Q", Tokenizer::SENTENCE_END, "E", Tokenizer::SENTENCE_END, "Size"}));
   }
 
+  TEST(TestTokenizer, TestSpecialEndOfSentence)
+  {
+    std::stringstream stream{"My name is Mr. Flopenfause, Ph.D. I am pleased to announce nothing!"};
+    Tokenizer tokenizer;
+    std::list<std::string> new_special{
+      "Ph.D.",
+      "Mr.",
+    };
+    tokenizer.set_special_words(new_special);
+    auto tokens = tokenizer.scan(stream);
+    ASSERT_EQ(tokens, (std::list<std::string>{"My", "name", "is",
+					      "Mr.",
+					      "Flopenfause",
+					      "Ph.D.",
+					      Tokenizer::SENTENCE_END,
+					      "I",
+					      "am",
+					      "pleased",
+					      "to",
+					      "announce",
+					      "nothing",
+					      Tokenizer::SENTENCE_END}));
+					      
+  }  
   TEST(TestTokenizer, TestAlternateSentenceEnds)
   {
     std::stringstream stream{"Oh happy day! Oh happy day! How are you? Are you well?"};
@@ -69,7 +90,7 @@ namespace
     };
     tokenizer.set_special_words(new_special);
     auto tokens = tokenizer.scan(stream);
-    ASSERT_EQ(tokens.size(), 10);
+    //ASSERT_EQ(tokens.size(), 10);
     ASSERT_EQ(tokens, (std::list<std::string>{"special", "words", "e",
 					      Tokenizer::SENTENCE_END, "g",
 					      Tokenizer::SENTENCE_END,

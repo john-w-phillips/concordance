@@ -5,6 +5,8 @@
 #include <iostream>
 #include <locale>
 #include <algorithm>
+#include <unordered_set>
+
 namespace code_challenge
 {
   class Tokenizer
@@ -13,7 +15,9 @@ namespace code_challenge
     const static std::string SENTENCE_END;
     Tokenizer():
       is_current_token_special{false},
-      special_words{SPECIAL_WORDS}
+      last_token_may_have_ended_sentence{false},
+      special_words{SPECIAL_WORDS},
+      specials_that_cant_end_sentences{SPECIALS_THAT_CANT_END_SENTENCES}
     {}
 
     const std::list<std::string>&
@@ -22,6 +26,7 @@ namespace code_challenge
       tokens.clear();
       current_token.clear();
       is_current_token_special = false;
+      last_token_may_have_ended_sentence = false;
       tokenize_inner(stream);
       return tokens;
     }
@@ -32,15 +37,29 @@ namespace code_challenge
       special_words = new_words;
     }
 
+    void
+    set_specials_that_cant_end_sentences(const std::unordered_set<std::string>& newset)
+    {
+      specials_that_cant_end_sentences = newset;
+    }
+
     const std::list<std::string>&
     get_special_words()
     {
       return special_words;
     }
 
+    const std::unordered_set<std::string>&
+    get_specials_that_cant_end_sentences()
+    {
+      return specials_that_cant_end_sentences;
+    }
+
   protected:
     std::list<std::string> special_words;
+    std::unordered_set<std::string> specials_that_cant_end_sentences;    
     const static std::list<std::string> SPECIAL_WORDS;
+    const static std::unordered_set<std::string> SPECIALS_THAT_CANT_END_SENTENCES;    
     const static std::string SENTENCE_ENDINGS;
     void
     tokenize_inner(std::istream& stream)
@@ -59,6 +78,12 @@ namespace code_challenge
 	 */
 	if (std::isalnum(next) || next == '\'')
 	{
+	  if (last_token_may_have_ended_sentence
+	      && (next >= 'A' && next <= 'Z')
+	      && current_token.empty())
+	  {
+	    tokens.push_back(Tokenizer::SENTENCE_END);
+	  }
 	  current_token.push_back(next);
 	}
 	else if (std::isblank(next)
@@ -72,13 +97,17 @@ namespace code_challenge
 	}
 	else
 	{
+
 	  /*
 	    In this case we ignore the character (for example :) but
 	    end the current token. This allows something like "this:"
 	    to be tokenized as just 'this'.
 	   */
 	  process_blank(stream);
+	  last_token_may_have_ended_sentence = false;	  
 	}
+	if (!current_token.empty())
+	  last_token_may_have_ended_sentence = false;
 	if (next == std::char_traits<char>::eof() && stream.eof())
 	  break;
       }
@@ -126,22 +155,23 @@ namespace code_challenge
 
     void process_blank(std::istream& stream)
     {
+      /*
+	A token is 'special' when at some point it matched a special
+	word. However, we need to make sure it still does after the
+	blank.
+
+	So, if we find the complete current token in the special
+	words, we push it onto the stream. Otherwise, we remove back
+	to the first sentence ender and see if _that_ matches a token
+	(this allows us to do longest-matching for special words), and
+	repeat.
+       */
+      bool was_special = false;
       for (; is_current_token_special; )
       {
-	/*
-	  no match, it was 'special' but now isn't. This could happen
-	  if someone for whatever reason writes:
-
-	  ...' e.generally we do not'...
-
-	  We would mistake this for 'e.g.' at the beginning but then
-	  have to go back. It's hard to see how these situations could
-	  occur in well-formed text but I added code to handle it.
-	*/
 	if (current_token_found_in_special_words())
 	{
-	  // finalize_current_token_to_stream();
-	  // return;
+	  was_special = true;
 	  break;
 	}
 	else
@@ -150,9 +180,22 @@ namespace code_challenge
 	}
       }
       finalize_current_token_to_stream();
+      if (was_special)
+	check_for_possible_sentence_ending_abbrev();
     }
 
-    bool putback_ending_of_token_upto_sentence_end(std::istream& stream)
+    void check_for_possible_sentence_ending_abbrev()
+    {
+      std::string last_tok = tokens.back();
+      if (get_specials_that_cant_end_sentences().find(last_tok)
+	  == get_specials_that_cant_end_sentences().end()
+	  && last_tok.back() == '.')
+	last_token_may_have_ended_sentence = true;
+      else
+	last_token_may_have_ended_sentence = false;
+    }
+
+    void putback_ending_of_token_upto_sentence_end(std::istream& stream)
     {
       std::string temp_token_holder;
       /*
@@ -170,7 +213,6 @@ namespace code_challenge
       {
 	current_token = temp_token_holder;
 	finalize_current_token_to_stream();
-	return true;	      
       }
       else
       {
@@ -180,7 +222,6 @@ namespace code_challenge
 	  stream.putback(*i);
 	stream.putback(current_token.back());
 	current_token.pop_back();
-	return false;
       }      
     }
 
@@ -213,6 +254,7 @@ namespace code_challenge
 
     
     bool is_current_token_special;
+    bool last_token_may_have_ended_sentence;
     std::string current_token;
     std::list<std::string> tokens;
   };

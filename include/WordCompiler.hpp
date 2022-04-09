@@ -115,19 +115,31 @@ namespace code_challenge
 
     void set_specialwords(std::istream& words_stream)
     {
-      std::list<std::string> words;      
-      for (; ;)
+      std::list<std::string> special_words;
+      std::unordered_set<std::string> specials_cant_end_sentence;
+      for (; words_stream;)
       {
 	std::string line;
 	std::getline(words_stream, line);
-	if (line.size())
+	if (line.empty() || line[0] == '#')
+	  continue;
+	if (line.find(':') != std::string::npos)
 	{
-	  words.push_back(line);
+	  std::string designator = line.substr(0, line.find(':'));
+	  line = line.substr(line.find(':') + 1);	  
+	  if (designator == "prefix" || designator == "nonender")
+	    specials_cant_end_sentence.insert(line);
+	  else
+	  {
+	    std::cerr << "Bad special line: " << line << " skipping..." << std::endl;
+	    continue;
+	  }
+
 	}
-	else
-	  break;
+	special_words.push_back(line);
       }
-      tokenizer.set_special_words(words);
+      tokenizer.set_special_words(special_words);
+      tokenizer.set_specials_that_cant_end_sentences(specials_cant_end_sentence);
     }
 
     void compile_words_from_source(std::istream& char_stream)

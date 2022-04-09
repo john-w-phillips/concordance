@@ -1,14 +1,28 @@
+# This is an example 'special words' file.  Each word in the file is
+# 'special' and periods in it should not be treated as sentence
+# enders.  If a line begins with nonender: or prefix:, the special
+# word on that line will not be treated as being able to end a
+# sentence, while otherwise it would.  For example the text "My name
+# is so-and-so, Ph.D. How are you?"  would normally be parsed as two
+# sentences, since Ph.D. ends with a period, and 'How' is
+# capitalized. But if Ph.D. was in this file as 'nonender:Ph.D.', that
+# would mean that it couldn't end sentences. This is useful for
+# prefixes also (prefix: and nonender: are the same).
+
+Ph.D.
 P.H.D.
-P.H.D
 O.E.B.
-O.E.B
-O.E.D.
-O.E.D
-M.S.
-M.S
+O.E.M.
 D.D.S.
-D.D.S
 M.D.
-M.D
-R.N.
 Esq.
+nonender:i.e.
+nonender:e.g.
+nonender:n.b.
+nonender:N.B.
+prefix:Sen.
+prefix:Hon.
+prefix:Mr.
+prefix:Mme.
+prefix:M.
+prefix:Gen.
